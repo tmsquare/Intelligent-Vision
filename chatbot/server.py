@@ -1,16 +1,16 @@
 import socket
-#from threading import *
+import threading
 import sys
-import RPi.GPIO as GPIO
-from thread import *
+#import RPi.GPIO as GPIO
 import datetime
 import random
 import requests
 import os
+import subprocess
 
-GPIO.setwarnings(False)
-GPIO.setmode(GPIO.BOARD)
-GPIO.setup(11,GPIO.OUT)
+#GPIO.setwarnings(False)
+#GPIO.setmode(GPIO.BOARD)
+#GPIO.setup(11,GPIO.OUT)
 
 host = ''
 port = 8220
@@ -33,7 +33,7 @@ responses = ['okay', 'i am fine']
 database={
     'jarvis':'hello,sir how can i help you',
     'name':'jarvis',
-    'what is your name':'my name is jarvis',
+    'what is your name':'my name is Intelligence vision bot',
     'hello jarvis':'hello,sir how can i help you',
     'what can you do for me':'i can do many things..'
 }
@@ -45,41 +45,35 @@ def chatboat(data):
     if data in database:
         print(database[data])
         #os.system("flite -t '"+ database[data] +"'")
-        sclient(database[data])
+        sclient(database[data].encode())
     elif data in questions:
         random_response = random.choice(responses)
         print(random_response)
         #os.system("flite -t '"+ random_response +"'")
-        sclient(random_response)
+        sclient(random_response.encode())
     elif data in greetings:
         random_greeting = random.choice(greetings)
         print(random_greeting)
-        sclient(random_greeting)
+        sclient(random_greeting.encode())
         #os.system("flite -t '"+ random_greeting +"'")
- 	elif 'light on'in data or 'led on' in data:
-        sclient("light turn on")
-        #os.system("flite -t 'light turn on'")
-        GPIO.output(11,True)
-        print("Light on")
-    elif 'light of' in data or 'led of' in data:
-        sclient("light turn off")
-        #os.system("flite -t 'light turn off'")
-        GPIO.output(11,False)
-        print("Light Off")
+    
     elif 'time' in data:
         now = datetime.datetime.now()
         time=str(now.hour)+str("hours")+str(now.minute)+str("minutes")
         print(time)
-        #os.system("flite -t '"+ time+"'")
-        sclient(time)
+    elif 'prendre une photo' in data:
+        myCmd = "sudo python /home/pi/Desktop/IntelligenceVision/Deploy/camera.py"
+        
+        p = subprocess.Popen(myCmd, shell=True)
+        sclient(b"Prise de photo en cours d'execution")
     elif 'date'in data:
         now = datetime.datetime.now()
         date=str("%s/%s/%s" % (now.month,now.day,now.year))
         print(date)
         #os.system("flite -t '"+date+"'")
-        sclient(date)
+        sclient(date.encode())
     else:
-        conn.send("sorry please repeat..")
+        conn.send(b"Veuillez repeter s'il vous plait..")
         add_data = open("newdata.txt", 'a')
         add_data.write("\n")
         add_data.write(data)
@@ -115,7 +109,7 @@ while True:
     print ("Connected to client at ", address)
     clients.add(conn)
 #Creating new thread. Calling clientthread function for this function and passing conn as argument.
-    start_new_thread(clientthread,(conn,addressList)) #start new thread takes 1st argument as a function name to be run, second is the tuple of arguments to the function.
+    threading.Thread(target=clientthread,args=(conn,addressList)).start() #start new thread takes 1st argument as a function name to be run, second is the tuple of arguments to the function.
 
 conn.close()
 sock.close()   
