@@ -1,0 +1,10 @@
+
+b'ta faute est'
+b"qu'est-ce que vous pouvez faire pour moi"
+b"veuillez recommencer s'il vous pla\xc3\xaet"
+b'que pouvez-vous faire'
+b"commencer s'il vous pla\xc3\xaet"
+b'que peux-tu faire'
+b"recommencer s'il vous pla\xc3\xaet"
+b"qu'est-ce que vous faites"
+b"recommencer s'il vous pla\xc3\xaet"
